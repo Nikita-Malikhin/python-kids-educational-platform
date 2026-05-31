@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel wide">
+  <h1>{{ test.title }}</h1>
+  <p>{{ test.description }}</p>
+  {% if score is not none %}
+    <div class="result-box"><strong>Результат: {{ score }} баллов</strong></div>
+    {% for item in feedback %}
+      <div class="feedback {{ 'ok' if item.ok else 'bad' }}">
+        <h3>{{ item.question.question_text }}</h3>
+        {% if item.ok %}<p>Верно.</p>{% else %}<p>Неверно. Правильный ответ: <b>{{ item.right.answer_text if item.right else 'не задан' }}</b></p>{% if item.chosen and item.chosen.hint %}<p class="hint">Подсказка: {{ item.chosen.hint }}</p>{% endif %}{% endif %}
+      </div>
+    {% endfor %}
+    <a class="btn" href="{{ url_for('dashboard') }}">В кабинет</a>
+  {% else %}
+    <form method="post">
+      {% for q in questions %}
+        <div class="question-card"><h3>{{ loop.index }}. {{ q.question_text }}</h3>
+          {% for a in q.answers %}<label class="answer"><input type="radio" name="q_{{ q.question_id }}" value="{{ a.answer_id }}" required> {{ a.answer_text }}</label>{% endfor %}
+        </div>
+      {% endfor %}
+      <button class="btn" type="submit">Отправить ответы</button>
+    </form>
+  {% endif %}
+</section>
+{% endblock %}

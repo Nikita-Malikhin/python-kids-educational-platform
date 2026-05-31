@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="dashboard-head">
+  <div>
+    <p class="eyebrow">Личный кабинет</p>
+    <h1>Кабинет обучающегося</h1>
+    <p>Здесь отображается прогресс обучения, результаты тестов и выполненные домашние задания.</p>
+  </div>
+  <a class="btn" href="{{ url_for('lectures') }}">Перейти к материалам</a>
+</section>
+
+<section class="progress-grid">
+  <article class="progress-card">
+    <span>Пройдено лекций</span>
+    <strong>{{ progress.completed_lectures }} из {{ progress.total_lectures }}</strong>
+    <div class="progress-line"><i style="width: {{ progress.lecture_percent }}%"></i></div>
+    <small>{{ progress.lecture_percent }}%</small>
+  </article>
+
+  <article class="progress-card">
+    <span>Тесты</span>
+    <strong>{{ progress.completed_tests }} из {{ progress.total_tests }}</strong>
+    <div class="progress-line"><i style="width: {{ progress.test_percent }}%"></i></div>
+    <small>{{ progress.test_percent }}%</small>
+  </article>
+
+  <article class="progress-card">
+    <span>Домашние задания</span>
+    <strong>{{ progress.completed_homework }} из {{ progress.total_homework }}</strong>
+    <div class="progress-line"><i style="width: {{ progress.homework_percent }}%"></i></div>
+    <small>{{ progress.homework_percent }}%</small>
+  </article>
+</section>
+
+<section class="panel wide">
+  <div class="section-title-row">
+    <div>
+      <p class="eyebrow">Тестирование</p>
+      <h2>Мои результаты тестов</h2>
+    </div>
+  </div>
+
+  {% if results %}
+    <div class="results-list">
+      {% for r in results %}
+      <article class="result-card">
+        <div>
+          <strong>{{ r.lecture_title }}</strong>
+          <span>{{ r.test_title }}</span>
+        </div>
+        <div class="score-pill">{{ r.score }} баллов</div>
+        <time>{{ r.passed_at.strftime('%d.%m.%Y %H:%M') }}</time>
+      </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">Результатов тестов пока нет.</p>
+  {% endif %}
+</section>
+
+<section class="panel wide">
+  <div class="section-title-row">
+    <div>
+      <p class="eyebrow">Практика</p>
+      <h2>Домашние задания</h2>
+    </div>
+  </div>
+
+  {% if homework_results %}
+    <div class="results-list">
+      {% for h in homework_results %}
+      <article class="result-card">
+        <div>
+          <strong>{{ h.lecture_title }}</strong>
+          <span>{{ h.level }} · {{ h.title }}</span>
+        </div>
+        <div class="score-pill {{ 'ok' if h.is_correct else 'bad' }}">
+          {{ 'Выполнено' if h.is_correct else 'Нужно исправить' }}
+        </div>
+        <time>{{ h.submitted_at.strftime('%d.%m.%Y %H:%M') }}</time>
+      </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">Домашние задания пока не выполнялись.</p>
+  {% endif %}
+</section>
+{% endblock %}

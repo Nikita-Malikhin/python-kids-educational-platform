@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel wide">
+  <div class="section-title-row">
+    <div>
+      <p class="eyebrow">{{ 'Редактирование' if test else 'Создание' }}</p>
+      <h1>{{ 'Редактирование теста' if test else 'Добавление полноценного теста' }}</h1>
+    </div>
+  </div>
+
+  <form method="post" onsubmit="prepareQuestions()">
+    <label>Лекция</label>
+    <select name="lecture_id" required>
+      {% for lecture in lectures %}
+        <option value="{{ lecture.lecture_id }}" {% if test and test.lecture_id == lecture.lecture_id %}selected{% endif %}>{{ lecture.title }}</option>
+      {% endfor %}
+    </select>
+
+    <label>Название теста</label>
+    <input name="title" required value="{{ test.title if test else '' }}">
+
+    <label>Описание</label>
+    <textarea name="description">{{ test.description if test else '' }}</textarea>
+
+    <div class="editor-toolbar">
+      <button type="button" class="btn muted" onclick="addQuestion()">Добавить вопрос</button>
+    </div>
+
+    <div id="questions"></div>
+    <input type="hidden" name="questions_count" id="questions_count" value="0">
+
+    <button class="btn" type="submit">{{ 'Сохранить изменения' if test else 'Сохранить тест' }}</button>
+  </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const initialQuestions = {{ questions|default([])|tojson }};
+window.addEventListener('load', () => {
+  if (initialQuestions.length) {
+    initialQuestions.forEach(q => addQuestion(q));
+  } else {
+    addQuestion();
+  }
+});
+</script>
+{% endblock %}

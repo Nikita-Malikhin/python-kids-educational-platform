@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="lesson-shell">
+  <section class="panel wide lesson-view">
+    <div class="section-title-row">
+      <div>
+        <p class="eyebrow">Лекция</p>
+        <h1>{{ lecture.title }}</h1>
+      </div>
+      {% if user and user.role_name == 'teacher' %}
+        <div class="action-row">
+          <a class="btn muted" href="{{ url_for('edit_lecture', lecture_id=lecture.lecture_id) }}">Редактировать</a>
+          <form method="post" action="{{ url_for('delete_lecture', lecture_id=lecture.lecture_id) }}" onsubmit="return confirm('Удалить лекцию вместе с тестами, домашними заданиями и результатами?');">
+            <button class="btn danger" type="submit">Удалить</button>
+          </form>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if blocks %}
+      {% for block in blocks %}
+        {% if block.type == 'text' %}
+          <div class="lesson-block text-block">{{ block.content|replace('\n','<br>')|safe }}</div>
+        {% endif %}
+        {% if block.type == 'code' %}
+          <pre class="code-block"><code>{{ block.content }}</code></pre>
+        {% endif %}
+        {% if block.type == 'image' and block.src %}
+          <figure class="image-block">
+            <img src="{{ url_for('uploaded_file', filename=block.src) }}">
+            {% if block.caption %}<figcaption>{{ block.caption }}</figcaption>{% endif %}
+          </figure>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      <p class="muted">Содержание лекции пока не заполнено.</p>
+    {% endif %}
+  </section>
+
+  <section class="panel wide">
+    <div class="section-title-row">
+      <div>
+        <p class="eyebrow">Проверка знаний</p>
+        <h2>Тесты</h2>
+      </div>
+      {% if user and user.role_name == 'teacher' %}
+        <a class="btn muted" href="{{ url_for('new_test') }}">Добавить тест</a>
+      {% endif %}
+    </div>
+
+    {% if tests %}
+      <div class="list-cards">
+        {% for test in tests %}
+          <div class="test-card test-card-manage">
+            <a href="{{ url_for('take_test', test_id=test.test_id) }}">
+              <strong>{{ test.title }}</strong>
+              <span>{{ test.description }}</span>
+            </a>
+            {% if user and user.role_name == 'teacher' %}
+              <div class="action-row compact">
+                <a class="btn small muted" href="{{ url_for('edit_test', test_id=test.test_id) }}">Редактировать</a>
+                <form method="post" action="{{ url_for('delete_test', test_id=test.test_id) }}" onsubmit="return confirm('Удалить этот тест и результаты по нему?');">
+                  <button class="btn small danger" type="submit">Удалить</button>
+                </form>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted">К этой лекции тесты пока не добавлены.</p>
+    {% endif %}
+  </section>
+
+  <section class="panel wide">
+    <div class="section-title-row">
+      <div>
+        <p class="eyebrow">Практика</p>
+        <h2>Домашнее задание</h2>
+      </div>
+      {% if user and user.role_name == 'teacher' %}
+        {% if homework %}
+          <div class="action-row">
+            <a class="btn muted" href="{{ url_for('edit_homework', lecture_id=lecture.lecture_id) }}">Редактировать домашку</a>
+            <form method="post" action="{{ url_for('delete_homework', lecture_id=lecture.lecture_id) }}" onsubmit="return confirm('Удалить все домашние задания этой лекции и результаты учеников?');">
+              <button class="btn danger" type="submit">Удалить домашку</button>
+            </form>
+          </div>
+        {% else %}
+          <a class="btn muted" href="{{ url_for('new_homework') }}">Добавить домашку</a>
+        {% endif %}
+      {% endif %}
+    </div>
+
+    {% if homework %}
+      <div class="homework-grid">
+        {% for task in homework %}
+          {% set saved = homework_results.get(task.homework_id) if homework_results else None %}
+          <article class="card homework {{ task.level|lower }}">
+            <span class="badge">{{ task.level }}</span>
+            <h3>{{ task.title }}</h3>
+            <p>{{ task.description }}</p>
+
+            {% if user.role_name == 'student' %}
+              <form method="post" action="{{ url_for('submit_homework', homework_id=task.homework_id) }}">
+                <input name="answer" placeholder="Введите ответ" value="{{ saved.answer if saved else '' }}" required>
+                <button class="btn small" type="submit">Проверить</button>
+
+                {% if request.args.get('homework') == task.homework_id|string %}
+                  {% if request.args.get('status') == 'correct' %}
+                    <div class="homework-status success">Задание выполнено правильно.</div>
+                  {% elif request.args.get('status') == 'wrong' %}
+                    <div class="homework-status error">Ответ неверный. Попробуйте ещё раз.</div>
+                  {% endif %}
+                {% elif saved %}
+                  {% if saved.is_correct %}
+                    <div class="homework-status success">Задание уже выполнено правильно.</div>
+                  {% else %}
+                    <div class="homework-status error">Последний ответ был неверным.</div>
+                  {% endif %}
+                {% endif %}
+              </form>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted">Домашнее задание пока не добавлено.</p>
+    {% endif %}
+  </section>
+</section>
+{% endblock %}

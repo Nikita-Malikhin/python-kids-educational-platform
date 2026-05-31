@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel wide">
+  <div class="section-title-row">
+    <div>
+      <p class="eyebrow">{{ 'Редактирование' if lecture else 'Создание' }}</p>
+      <h1>{{ 'Редактирование домашнего задания' if lecture else 'Домашнее задание по уровням' }}</h1>
+    </div>
+  </div>
+
+  <form method="post">
+    <label>Лекция</label>
+    <select name="lecture_id" required>
+      {% for item in lectures %}
+        <option value="{{ item.lecture_id }}" {% if lecture and lecture.lecture_id == item.lecture_id %}selected{% endif %}>{{ item.title }}</option>
+      {% endfor %}
+    </select>
+
+    {% for level in ['Junior','Middle','Senior'] %}
+      {% set task = homework_by_level.get(level) if homework_by_level is defined else None %}
+      <div class="level-box">
+        <span class="badge">{{ level }}</span>
+
+        <label>Название задания</label>
+        <input name="{{ level }}_title" placeholder="Например: Первое задание" value="{{ task.title if task else '' }}">
+
+        <label>Текст задания</label>
+        <textarea name="{{ level }}_description" placeholder="Например: С помощью кода посчитай, сколько будет 2 + 3">{{ task.description if task else '' }}</textarea>
+
+        <label>Правильный ответ</label>
+        <input name="{{ level }}_answer" placeholder="5" value="{{ task.expected_answer if task else '' }}">
+      </div>
+    {% endfor %}
+
+    <button class="btn" type="submit">{{ 'Сохранить изменения' if lecture else 'Сохранить домашку' }}</button>
+  </form>
+</section>
+{% endblock %}

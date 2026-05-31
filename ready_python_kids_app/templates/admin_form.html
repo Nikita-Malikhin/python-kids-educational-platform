@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="admin-page">
+  <div class="admin-hero">
+    <div>
+      <p class="eyebrow">Панель преподавателя</p>
+      <h1>Добавление администратора</h1>
+      <p>Создайте пользователя с правами администратора. После создания он сможет управлять материалами, тестами, домашними заданиями, пользователями и результатами.</p>
+    </div>
+  </div>
+
+  <section class="admin-card admin-form-card">
+    <div class="admin-card-head">
+      <div>
+        <h2>Данные администратора</h2>
+        <p>Заполните логин, электронную почту и пароль для входа.</p>
+      </div>
+    </div>
+
+    <form method="post" class="admin-form">
+      <label for="login">Логин</label>
+      <input id="login" name="login" placeholder="Например: admin2" required>
+
+      <label for="email">Электронная почта</label>
+      <input id="email" type="email" name="email" placeholder="admin2@mail.ru" required>
+
+      <label for="password">Пароль</label>
+      <input id="password" type="password" name="password" placeholder="Введите пароль" required>
+
+      <div class="form-actions">
+        <button class="btn" type="submit">Добавить администратора</button>
+        <a class="btn muted" href="{{ url_for('users_list') }}">Назад к пользователям</a>
+      </div>
+    </form>
+  </section>
+</section>
+{% endblock %}

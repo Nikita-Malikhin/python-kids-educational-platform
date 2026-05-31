@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="hero purple-hero">
+  <div>
+    <p class="eyebrow">Интерактивный курс для детей</p>
+    <h1>Изучение Python через уроки, практику и задания</h1>
+    <a class="btn" href="{{ url_for('register') if not user else url_for('lectures') }}">Начать обучение</a>
+  </div>
+</section>
+
+<section class="course-plan">
+  <h2>Что доступно на платформе</h2>
+  <div class="grid3">
+    <article class="card"><span class="num">01</span><h3>Лекции</h3><p>Изучение теоретических материалов по основам программирования на языке Python</p></article>
+    <article class="card"><span class="num">02</span><h3>Тестирование</h3><p>Проверка знаний с помощью тестовых заданий</p></article>
+    <article class="card"><span class="num">03</span><h3>Домашние задания</h3><p>Выполнение практических заданий различных уровней сложности с целью закрепления изученного материала</p></article>
+  </div>
+</section>
+{% endblock %}

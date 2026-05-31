@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="admin-page">
+  <div class="admin-hero">
+    <div>
+      <p class="eyebrow">Панель преподавателя</p>
+      <h1>Управление курсом</h1>
+      <p>Добавляйте материалы, тесты, домашние задания и отслеживайте активность обучающихся.</p>
+    </div>
+  </div>
+
+  <section class="admin-stats-grid">
+    <article class="admin-stat-card">
+      <span>Обучающиеся</span>
+      <strong>{{ stats.students }}</strong>
+      <a href="{{ url_for('users_list') }}">Открыть список</a>
+    </article>
+    <article class="admin-stat-card">
+      <span>Материалы</span>
+      <strong>{{ stats.lectures }}</strong>
+      <a href="{{ url_for('lectures') }}">Перейти к материалам</a>
+    </article>
+    <article class="admin-stat-card">
+      <span>Тестов пройдено</span>
+      <strong>{{ stats.test_results }}</strong>
+      <a href="{{ url_for('teacher_results') }}#tests-results">Смотреть результаты</a>
+    </article>
+    <article class="admin-stat-card">
+      <span>Домашек выполнено</span>
+      <strong>{{ stats.homework_done }}</strong>
+      <a href="{{ url_for('teacher_results') }}#homework-results">Смотреть домашки</a>
+    </article>
+  </section>
+
+  <section class="admin-card">
+    <div class="admin-card-head">
+      <div>
+        <h2>Прогресс обучающихся</h2>
+        <p>Общая активность студентов по материалам, тестам и домашним заданиям.</p>
+      </div>
+    </div>
+
+    <div class="progress-grid teacher-progress">
+      <article class="progress-card">
+        <span>Лекции</span>
+        <strong>{{ stats.lecture_progress_percent }}%</strong>
+        <div class="progress-line"><i style="width: {{ stats.lecture_progress_percent }}%"></i></div>
+        <small>{{ stats.lecture_progress }} прохождений</small>
+      </article>
+      <article class="progress-card">
+        <span>Тесты</span>
+        <strong>{{ stats.test_progress_percent }}%</strong>
+        <div class="progress-line"><i style="width: {{ stats.test_progress_percent }}%"></i></div>
+        <small>{{ stats.test_results }} результатов</small>
+      </article>
+      <article class="progress-card">
+        <span>Домашние задания</span>
+        <strong>{{ stats.homework_progress_percent }}%</strong>
+        <div class="progress-line"><i style="width: {{ stats.homework_progress_percent }}%"></i></div>
+        <small>{{ stats.homework_done }} правильных ответов</small>
+      </article>
+    </div>
+  </section>
+
+  <section class="admin-card">
+    <div class="admin-card-head">
+      <div>
+        <h2>Быстрые действия</h2>
+        <p>Основные действия преподавателя для наполнения курса.</p>
+      </div>
+    </div>
+    <div class="admin-actions-grid">
+      <a class="action-card" href="{{ url_for('new_lecture') }}">
+        <strong>Добавить материал</strong>
+        <span>Создание лекции из текстовых, кодовых и графических блоков.</span>
+      </a>
+      <a class="action-card" href="{{ url_for('new_test') }}">
+        <strong>Добавить тест</strong>
+        <span>Создание вопросов, вариантов ответа и подсказок.</span>
+      </a>
+      <a class="action-card" href="{{ url_for('new_homework') }}">
+        <strong>Добавить домашку</strong>
+        <span>Задания трёх уровней сложности: Junior, Middle, Senior.</span>
+      </a>
+      <a class="action-card" href="{{ url_for('new_admin') }}">
+        <strong>Добавить администратора</strong>
+        <span>Создание пользователя с правами управления курсом.</span>
+      </a>
+    </div>
+  </section>
+</section>
+{% endblock %}

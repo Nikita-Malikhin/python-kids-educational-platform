@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="page-head with-actions">
+  <div>
+    <p class="eyebrow">Материалы курса</p>
+    <h1>Учебные материалы</h1>
+    <p>Выберите лекцию, чтобы открыть текстовые блоки, примеры кода, тесты и домашние задания.</p>
+  </div>
+
+  {% if user and user.role_name == 'teacher' %}
+    <a class="btn" href="{{ url_for('new_lecture') }}">Новая лекция</a>
+  {% endif %}
+</section>
+
+<div class="materials-list">
+  {% for l in lectures %}
+  <article class="material-card">
+    <div class="material-main">
+      <div>
+        <span class="badge">Лекция</span>
+        <h3>{{ l.title }}</h3>
+        <p>{{ l.preview }}</p>
+      </div>
+      <div class="material-meta">
+        <span>Автор: {{ l.author_login }}</span>
+        <span>Тестов: {{ l.tests_count }}</span>
+        <span>Домашних заданий: {{ l.homework_count }}</span>
+      </div>
+    </div>
+    <div class="action-row compact">
+      <a class="btn small" href="{{ url_for('lecture_detail', lecture_id=l.lecture_id) }}">Открыть</a>
+      {% if user and user.role_name == 'teacher' %}
+        <a class="btn small muted" href="{{ url_for('edit_lecture', lecture_id=l.lecture_id) }}">Редактировать</a>
+        <form method="post" action="{{ url_for('delete_lecture', lecture_id=l.lecture_id) }}" onsubmit="return confirm('Удалить лекцию вместе с тестами, домашними заданиями и результатами?');">
+          <button class="btn small danger" type="submit">Удалить</button>
+        </form>
+      {% endif %}
+    </div>
+  </article>
+  {% else %}
+    <section class="panel wide empty-state">
+      <h2>Материалы пока не добавлены</h2>
+      <p>Преподаватель сможет добавить первую лекцию через кабинет.</p>
+    </section>
+  {% endfor %}
+</div>
+{% endblock %}

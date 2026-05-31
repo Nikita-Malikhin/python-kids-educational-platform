@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="admin-page">
+  <div class="admin-hero">
+    <div>
+      <p class="eyebrow">Панель преподавателя</p>
+      <h1>Результаты обучающихся</h1>
+      <p>Здесь отображаются результаты тестов и выполненные домашние задания.</p>
+    </div>
+  </div>
+
+  <div class="admin-tabs">
+    <a class="admin-tab active" href="#tests-results">Тесты</a>
+    <a class="admin-tab" href="#homework-results">Домашние задания</a>
+  </div>
+
+  <section id="tests-results" class="admin-card">
+    <div class="admin-card-head">
+      <div>
+        <h2>Результаты тестирования</h2>
+        <p>Оценки, полученные обучающимися после прохождения тестов.</p>
+      </div>
+      <span class="counter">{{ results|length }}</span>
+    </div>
+
+    {% if results %}
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Пользователь</th>
+              <th>Email</th>
+              <th>Лекция</th>
+              <th>Тест</th>
+              <th>Баллы</th>
+              <th>Дата</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in results %}
+            <tr>
+              <td><strong>{{ r.login }}</strong></td>
+              <td>{{ r.email }}</td>
+              <td>{{ r.lecture_title }}</td>
+              <td>{{ r.test_title }}</td>
+              <td>
+                <span class="score-pill {% if r.score >= 70 %}good{% elif r.score >= 40 %}middle-score{% else %}bad{% endif %}">
+                  {{ r.score }}%
+                </span>
+              </td>
+              <td>{{ r.passed_at.strftime('%d.%m.%Y %H:%M') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state">Результатов тестирования пока нет.</div>
+    {% endif %}
+  </section>
+
+  <section id="homework-results" class="admin-card">
+    <div class="admin-card-head">
+      <div>
+        <h2>Домашние задания</h2>
+        <p>Ответы обучающихся по уровням Junior, Middle и Senior.</p>
+      </div>
+      <span class="counter">{{ homework_results|length }}</span>
+    </div>
+
+    {% if homework_results %}
+      <div class="homework-result-grid">
+        {% for h in homework_results %}
+        <article class="homework-result-card">
+          <div class="homework-result-top">
+            <span class="badge">{{ h.level }}</span>
+            {% if h.is_correct %}
+              <span class="status-pill good">Выполнено</span>
+            {% else %}
+              <span class="status-pill bad">Ошибка</span>
+            {% endif %}
+          </div>
+          <h3>{{ h.title }}</h3>
+          <p class="muted-text">Лекция: {{ h.lecture_title }}</p>
+          <div class="answer-preview">
+            <span>Ответ обучающегося</span>
+            <strong>{{ h.answer }}</strong>
+          </div>
+          <div class="card-meta">
+            <span>{{ h.login }}</span>
+            <span>{{ h.submitted_at.strftime('%d.%m.%Y %H:%M') }}</span>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">Домашние задания пока не выполнялись.</div>
+    {% endif %}
+  </section>
+</section>
+{% endblock %}

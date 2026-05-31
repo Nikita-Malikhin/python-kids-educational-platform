@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel wide">
+  <h1>{{ 'Редактирование материала' if lecture else 'Добавление материала' }}</h1>
+  <form method="post" enctype="multipart/form-data" onsubmit="prepareBlocks(); if (typeof prepareQuestions === 'function') prepareQuestions();">
+    <label>Название</label>
+    <input name="title" required value="{{ lecture.title if lecture else '' }}">
+    <label>Блоки лекции</label>
+    <div class="editor-toolbar">
+      <button type="button" class="btn muted" onclick="addBlock('text')">+ Текст</button>
+      <button type="button" class="btn muted" onclick="addBlock('code')">+ Код</button>
+      <button type="button" class="btn muted" onclick="addBlock('image')">+ Картинка</button>
+    </div>
+    <div id="blocks"></div>
+    <input type="hidden" name="blocks_count" id="blocks_count" value="0">
+
+    {% if not lecture %}
+      <div class="inline-create-section">
+        <div class="section-title-row">
+          <div>
+            <p class="eyebrow">Дополнительно</p>
+            <h2>Тест к лекции</h2>
+            <p class="muted">Можно сразу добавить тест. Если оставить поля пустыми, будет создана только лекция.</p>
+          </div>
+        </div>
+
+        <label>Название теста</label>
+        <input name="test_title" placeholder="Например: Проверка по теме">
+
+        <label>Описание теста</label>
+        <textarea name="test_description" placeholder="Краткое описание теста"></textarea>
+
+        <div class="editor-toolbar">
+          <button type="button" class="btn muted" onclick="addQuestion()">Добавить вопрос</button>
+        </div>
+
+        <div id="questions"></div>
+        <input type="hidden" name="questions_count" id="questions_count" value="0">
+      </div>
+
+      <div class="inline-create-section">
+        <div class="section-title-row">
+          <div>
+            <p class="eyebrow">Практика</p>
+            <h2>Домашнее задание</h2>
+            <p class="muted">Можно сразу добавить задания трёх уровней. Пустые уровни сохраняться не будут.</p>
+          </div>
+        </div>
+
+        {% for level in ['Junior','Middle','Senior'] %}
+          <div class="level-box">
+            <span class="badge">{{ level }}</span>
+
+            <label>Название задания</label>
+            <input name="{{ level }}_title" placeholder="Например: Задание {{ loop.index }}">
+
+            <label>Текст задания</label>
+            <textarea name="{{ level }}_description" placeholder="Опишите задачу для ученика"></textarea>
+
+            <label>Правильный ответ</label>
+            <input name="{{ level }}_answer" placeholder="Ответ для автоматической проверки">
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <button class="btn" type="submit">Сохранить</button>
+  </form>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+const initialBlocks = {{ blocks|tojson }};
+window.addEventListener('load', () => {
+  if (initialBlocks.length) initialBlocks.forEach(b => addBlock(b.type, b));
+  else addBlock('text');
+});
+</script>
+{% endblock %}

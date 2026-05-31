@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="admin-page">
+  <div class="admin-hero">
+    <div>
+      <p class="eyebrow">Панель преподавателя</p>
+      <h1>Пользователи</h1>
+      <p>Список зарегистрированных пользователей и их роли в системе.</p>
+    </div>
+  </div>
+
+  <section class="admin-card">
+    <div class="admin-card-head">
+      <div>
+        <h2>Список пользователей</h2>
+        <p>Обучающиеся и преподаватели, зарегистрированные на платформе.</p>
+      </div>
+      <div class="admin-head-actions">
+        <a class="btn small" href="{{ url_for('new_admin') }}">Добавить администратора</a>
+        <span class="counter">{{ users|length }}</span>
+      </div>
+    </div>
+
+    {% if users %}
+      <div class="users-grid">
+        {% for u in users %}
+        <article class="user-card">
+          <div class="avatar">{{ u.login[:1]|upper }}</div>
+          <div class="user-info">
+            <h3>{{ u.login }}</h3>
+            <p>{{ u.email }}</p>
+          </div>
+          <div class="user-actions">
+            <span class="role-pill {{ u.role_name }}">
+              {% if u.role_name == 'teacher' %}Администратор{% else %}Обучающийся{% endif %}
+            </span>
+            {% if user and user.user_id != u.user_id %}
+            <form method="post" action="{{ url_for('delete_user', user_id=u.user_id) }}" onsubmit="return confirm('Удалить пользователя {{ u.login }}?');">
+              <button class="btn small danger" type="submit">Удалить</button>
+            </form>
+            {% endif %}
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">Пользователи пока не найдены.</div>
+    {% endif %}
+  </section>
+</section>
+{% endblock %}
